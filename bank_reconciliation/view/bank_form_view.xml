@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+        <!--银行对帐单tree-->
+        <record id='bank_form_tree' model='ir.ui.view'>
+			<field name='name'>bank.form.tree</field>
+			<field name='model'>bank.form</field>
+			<field name='arch' type='xml'>
+				<tree string='银行对帐单'>
+                    <field name='name'/>
+                    <field name='period_id'/>
+                    <field name='state'/>
+				</tree>
+			</field>
+		</record>
+        <!--银行对帐单form-->
+        <record id='bank_form_form' model='ir.ui.view'>
+			<field name='name'>bank.form.form</field>
+			<field name='model'>bank.form</field>
+			<field name='arch' type='xml'>
+                <form string="银行对帐单">
+	                <header>
+                        <button name='exp_k3_bank_voucher' states="draft" string="生成K3银行凭证" type="object" class="oe_highlight" />
+                        <button name='tax_invoice_done' states="draft" string="确认" type="object" class="oe_highlight"/>
+	                	<button name='tax_invoice_draft' states="done" string="反确认" type="object" />
+	                    <field name="state" widget="statusbar" readonly="1"/>
+	                </header>
+			    	<sheet>
+
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object"
+                                        string="引入excel"
+                                        name="button_excel"
+                                        class="oe_stat_button"
+                                        icon="fa-list-alt">
+                            </button>
+                            <button name="action_get_attachment_view"
+                                class="oe_stat_button"
+                                icon="fa-book"
+                                type="object">
+                                <field name="attachment_number" widget="statinfo" string="附件"/>
+                            </button>
+                        </div>
+						<group>
+							<field name="name"/>
+                            <field name="period_id"/>
+                            <field name="begin_id"/>
+                        </group>
+                        <notebook>
+                            <page string="发票明细">
+                                <field name="line_ids" widget="many2many" options="{'not_delete': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                        <field name='date'/>
+                                        <field name='name'/>
+                                        <field name="num"/>
+                                        <field name='amount_in'/>
+                                        <field name="amount_out"/>
+                                        <field name='note'/>
+                                        <field name="is_voucher"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+			</field>
+		</record>
+
+        <!-- 引入excel action -->
+        <record id="create_bank_form_form" model="ir.ui.view">
+            <field name="name">create_bank_form_form</field>
+            <field name="model">create.bank.form.wizard</field>
+            <field name="arch" type="xml">
+            	<form>
+            		<group>
+                        <field name="type"/>
+						<field name="excel" string="银行对帐单" />
+                    </group>
+                    <footer>
+                        <button name="create_bank_form"  string="引入" type="object" class="oe_highlight"/>
+                        或者
+                        <button string="取消" class="oe_link" special="cancel"/>
+                    </footer>
+            	</form>
+            </field>
+        </record>
+
+        <!--银行对帐单tree-->
+        <record id='bank_form_config_tree' model='ir.ui.view'>
+			<field name='name'>bank.form.config.tree</field>
+			<field name='model'>bank.form.config</field>
+			<field name='arch' type='xml'>
+				<tree string='银行对帐单设备'>
+                    <field name='name'/>
+                    <field name="is_normal"/>
+                    <field name='type'/>
+                    <field name='note'/>
+                    <field name='company_id'/>
+                    <field name='k3_account_code'/>
+                    <field name='k3_account_name'/>
+				</tree>
+			</field>
+		</record>
+
+        <record id="bank_account_form" model="ir.ui.view">
+            <field name="name">bank.account.form</field>
+            <field name="model">bank.account</field>
+            <field name="arch" type="xml">
+                <form string="银行对帐单">
+                    <group>
+                        <field name="name"/>
+                        <field name="num"/>
+                        <field name="k3_account_code"/>
+                        <field name="k3_account_name"/>
+                        <field name="company_id"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+	</data>
+</openerp>

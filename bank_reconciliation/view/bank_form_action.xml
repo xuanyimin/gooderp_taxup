@@ -1,0 +1,18 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--发票按钮-->
+        <record id="bank_form_action" model="ir.actions.act_window">
+            <field name="name">银行对帐单</field>
+            <field name="res_model">bank.form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="bank_form_config_action" model="ir.actions.act_window">
+            <field name="name">银行对帐单设置</field>
+            <field name="res_model">bank.form.config</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+	</data>
+</openerp>

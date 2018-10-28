@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+      <template id="template" xml:space="preserve">
+          <t t-extend="ListView.buttons">
+            <t t-jquery="button.o_list_button_add" t-operation="replace">
+                  <button t-if="widget.model == 'cn.account.invoice'" class="btn btn-primary btn-sm o_list_tender_button_create" type="button">Create Tender</button>
+                  <button t-if="widget.model != 'cn.account.invoice'" class="btn btn-primary btn-sm o_list_button_add" type="button">Create</button>
+            </t>
+          </t>
+      </template>

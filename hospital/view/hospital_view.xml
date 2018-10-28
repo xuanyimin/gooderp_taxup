@@ -1,0 +1,258 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+        <!--医院发票tree-->
+        <record id='hospital_invoice_tree' model='ir.ui.view'>
+			<field name='name'>hospital_invoice_tree</field>
+			<field name='model'>hospital.invoice</field>
+			<field name='arch' type='xml'>
+				<tree string='医疗发票'>
+                    <field name='name'/>
+                    <field name='invoice'/>
+                    <field name='amount'/>
+                    <field name='name_id'/>
+                    <field name='pay_type'/>
+                    <field name='type'/>
+				</tree>
+			</field>
+		</record>
+        <!--医院发票Form-->
+        <record id='hospital_invoice_form' model='ir.ui.view'>
+			<field name='name'>hospital_invoice_form</field>
+			<field name='model'>hospital.invoice</field>
+			<field name='arch' type='xml'>
+                <form string="K3配置">
+			    	<sheet>
+                        <group>
+                            <field name='name'/>
+                            <field name='pay_type'/>
+                            <field name='type'/>
+                            <field name='invoice'/>
+                            <field name="name_id"/>
+                            <field name="amount"/>
+                            <field name="difference_amount"/>
+                            <field name="is_red"/>
+                            <field name="note"/>
+                        </group>
+                        <notebook>
+                            <page string="发票明细">
+                                <field name="line_ids" widget="many2many" options="{'not_delete': True, 'reload_on_button': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                        <field name="name"/>
+                                         <field name="amount" sum='金额合计'/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="费用明细">
+                                <field name="cost_ids" widget="many2many" options="{'not_delete': True, 'reload_on_button': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                        <field name="cost_type"/>
+                                        <field name="name"/>
+                                        <field name="name2"/>
+                                        <field name="unit"/>
+                                        <field name="number" sum='数量合计'/>
+                                        <field name="amount" sum='金额合计'/>
+                                        <field name="cost_time"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="收款明细">
+                                <field name="pay_ids" widget="many2many" options="{'not_delete': True, 'reload_on_button': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                        <field name="name"/>
+                                         <field name="amount" sum='金额合计'/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                </form>
+			</field>
+		</record>
+
+        <!--月度发票tree-->
+        <record id='hospital_month_tree' model='ir.ui.view'>
+			<field name='name'>hospital.month.tree</field>
+			<field name='model'>hospital.month</field>
+			<field name='arch' type='xml'>
+				<tree string='月度发票'>
+                    <field name='name'/>
+                    <field name='state'/>
+				</tree>
+			</field>
+		</record>
+        <!--月度发票form-->
+        <record id='hospital_month_form' model='ir.ui.view'>
+			<field name='name'>hospital.month.form</field>
+			<field name='model'>hospital.month</field>
+			<field name='arch' type='xml'>
+                <form string="月度发票">
+	                <header>
+                        <button name='exp_k3_voucher' states="draft" string="生成K3收入文件" type="object" class="oe_highlight" groups="base.group_no_one"/>
+	                	<button name='exp_k3_sale_partner' states="draft" string="生成K3客户" type="object" class="oe_highlight" groups="base.group_no_one"/>
+                        <button name='tax_invoice_done' states="draft" string="确认" type="object" class="oe_highlight"/>
+	                	<button name='tax_invoice_draft' states="done" string="反确认" type="object" />
+	                    <field name="state" widget="statusbar" readonly="1"/>
+	                </header>
+			    	<sheet>
+                        <div class="oe_button_box" name="button_box">
+                                <button type="object"
+                                        string="引入excel"
+                                        name="button_excel"
+                                        class="oe_stat_button"
+                                        icon="fa-list-alt">
+                                </button>
+                                <button name="action_get_attachment_view"
+                                    class="oe_stat_button"
+                                    icon="fa-book"
+                                    type="object">
+                                    <field name="attachment_number" widget="statinfo" string="附件"/>
+                                </button>
+                        </div>
+						<group>
+							<field name="name"/>
+                            <field name="begin_id"/>
+                        </group>
+                        <notebook>
+                            <page string="发票明细">
+                                <field name="invoice_ids" widget="many2many" options="{'not_delete': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                        <field name='name'/>
+                                        <field name='invoice'/>
+                                        <field name='amount'/>
+                                        <field name='name_id'/>
+                                        <field name='pay_type'/>
+                                        <field name='type'/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+			</field>
+		</record>
+
+        <!--医疗发票k3设置tree-->
+        <record id='hospital_config_tree' model='ir.ui.view'>
+			<field name='name'>hospital.config.tree</field>
+			<field name='model'>hospital.config</field>
+			<field name='arch' type='xml'>
+				<tree string='医疗发票k3设置'>
+                    <field name='name'/>
+                    <field name='type'/>
+                    <field name='k3_account_code'/>
+                    <field name='k3_account_name'/>
+				</tree>
+			</field>
+		</record>
+
+        <!--医疗预收款k3设置tree-->
+        <record id='hospital_cash_tree' model='ir.ui.view'>
+			<field name='name'>hospital.cash.tree</field>
+			<field name='model'>hospital.cash</field>
+			<field name='arch' type='xml'>
+				<tree string='预收款单'>
+                    <field name='number'/>
+                    <field name='name'/>
+                    <field name='amount'/>
+                    <field name='type'/>
+                    <field name='date'/>
+                    <field name='note'/>
+				</tree>
+			</field>
+		</record>
+
+        <!--月度发票tree-->
+        <record id='hospital_cash_month_tree' model='ir.ui.view'>
+			<field name='name'>hospital.cash.month.tree</field>
+			<field name='model'>hospital.cash.month</field>
+			<field name='arch' type='xml'>
+				<tree string='月度发票'>
+                    <field name='name'/>
+                    <field name='state'/>
+				</tree>
+			</field>
+		</record>
+        <!--月度发票form-->
+        <record id='hospital_cash_month_form' model='ir.ui.view'>
+			<field name='name'>hospital.cash.month.form</field>
+			<field name='model'>hospital.cash.month</field>
+			<field name='arch' type='xml'>
+                <form string="月度发票">
+	                <header>
+                        <button name='synchro_hospital_cash' states="draft" string="同步数据" type="object" class="oe_highlight" groups="base.group_no_one"/>
+                         <button name='exp_k3_cash_voucher' states="draft" string="生成K3收款文件" type="object" class="oe_highlight" groups="base.group_no_one"/>
+	                	<button name='exp_k3_sale_partner' states="draft" string="生成K3客户" type="object" class="oe_highlight" groups="base.group_no_one"/>
+                        <button name='tax_invoice_done' states="draft" string="确认" type="object" class="oe_highlight"/>
+	                	<button name='tax_invoice_draft' states="done" string="反确认" type="object" />
+	                    <field name="state" widget="statusbar" readonly="1"/>
+	                </header>
+			    	<sheet>
+                        <div class="oe_button_box" name="button_box">
+                                <button name="action_get_attachment_view"
+                                    class="oe_stat_button"
+                                    icon="fa-book"
+                                    type="object">
+                                    <field name="attachment_number" widget="statinfo" string="附件"/>
+                                </button>
+                        </div>
+						<group>
+							<field name="name"/>
+                            <field name="begin_id"/>
+                        </group>
+                        <notebook>
+                            <page string="发票明细">
+                                <field name="cash_ids" widget="many2many" options="{'not_delete': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                       <field name='number'/>
+                                            <field name='name'/>
+                                            <field name='amount'/>
+                                            <field name='type'/>
+                                            <field name='date'/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+			</field>
+		</record>
+
+        <!-- 引入excel action -->
+        <record id="create_hospital_invoice_form" model="ir.ui.view">
+            <field name="name">create_hospital_invoice_form</field>
+            <field name="model">create.hospital.invoice.wizard</field>
+            <field name="arch" type="xml">
+            	<form>
+            		<group>
+                        <field name="type"/>
+						<field name="excel" string="门诊或住院收入" />
+                        <field name="excel2" string="门诊收费组成" attrs="{'invisible':[('type', '=', 'hospitalization')]}"/>
+                        <field name="excel3" string="门诊明细组成" attrs="{'invisible':[('type', '=', 'hospitalization')]}"/>
+                    </group>
+                    <footer>
+                        <button name="create_hospital_invoice"  string="引入" type="object" class="oe_highlight"/>
+                        <button name="synchro_hospital_invoice"  string="同步数据（同一网内）" type="object" class="oe_highlight"/>
+                        或者
+                        <button string="取消" class="oe_link" special="cancel"/>
+                    </footer>
+            	</form>
+            </field>
+        </record>
+
+        <!--医疗预收款k3设置tree-->
+        <record id='hospital_config_tree' model='ir.ui.view'>
+			<field name='name'>hospital.config.tree</field>
+			<field name='model'>hospital.config</field>
+			<field name='arch' type='xml'>
+				<tree string='医疗发票k3设置'>
+                    <field name='name'/>
+                    <field name='k3_account_code'/>
+                    <field name='k3_account_name'/>
+				</tree>
+			</field>
+		</record>
+
+    </data>
+</openerp>

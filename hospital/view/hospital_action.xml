@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- 国、地税设置 action -->
+        <record id="hospital_invoice_action" model="ir.actions.act_window">
+            <field name="name">发票明细</field>
+            <field name="res_model">hospital.invoice</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="hospital_cash_action" model="ir.actions.act_window">
+            <field name="name">预收款明细</field>
+            <field name="res_model">hospital.cash</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="hospital_month_action" model="ir.actions.act_window">
+            <field name="name">发票月度统计</field>
+            <field name="res_model">hospital.month</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="hospital_cash_month_action" model="ir.actions.act_window">
+            <field name="name">发票收款统计</field>
+            <field name="res_model">hospital.cash.month</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_hospital_config_setting_action" model="ir.actions.act_window">
+            <field name="name">医院发票设置</field>
+            <field name="res_model">hospital.config</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="view_hospital_cash_config_setting_action" model="ir.actions.act_window">
+            <field name="name">医院收款设置</field>
+            <field name="res_model">hospital.cash.config</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</openerp>

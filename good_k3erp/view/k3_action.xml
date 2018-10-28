@@ -1,0 +1,13 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--发票按钮-->
+        <record id="cn_account_invoice_producting" model="ir.actions.act_window">
+            <field name="name">产品入库</field>
+            <field name="res_model">tax.invoice.producting</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
+	</data>
+</openerp>

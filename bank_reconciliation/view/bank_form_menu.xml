@@ -1,0 +1,11 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- 菜单加入税务模块 -->
+        <menuitem id="menu_bank_form" name='银行对帐单' action="bank_form_action"
+            parent="tax.tax_accounting" sequence="0"/>
+        <menuitem id="menu_bank_form_config" name='银行对帐单配置' action="bank_form_config_action"
+            parent="tax.tax_config_menu" sequence="0"/>
+
+    </data>
+</openerp>

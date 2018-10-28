@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!--根菜单-->
+		<menuitem id='hospital_menu' name='医院会计'  web_icon="tax,static/description/tax.png"/>
+		<menuitem id='hospital_accounting' name='基本业务' parent='hospital_menu' sequence='10'/>
+        <menuitem id='hospital_config_menu' name='基本设置' parent='hospital_menu' sequence='40' />
+        <!-- 基础设置 -->
+        <menuitem id="menu_hospital_config" name='医院发票设置' action="view_hospital_config_setting_action"
+            parent="hospital_config_menu" sequence="0"/>
+        <menuitem id="menu_cash_hospital_config" name='医院收款设置' action="view_hospital_cash_config_setting_action"
+            parent="hospital_config_menu" sequence="0"/>
+        <menuitem id="menu_hospital_month" name='月度发票' action="hospital_month_action"
+            parent="hospital_accounting" sequence="0"/>
+        <menuitem id="menu_hospital_cash_month" name='月度收款' action="hospital_cash_month_action"
+            parent="hospital_accounting" sequence="0"/>
+        <menuitem id="menu_hospital_invoice" name='发票明细' action="hospital_invoice_action"
+            parent="hospital_accounting" sequence="0"/>
+        <menuitem id="menu_hospital_cash" name='收款明细' action="hospital_cash_action"
+            parent="hospital_accounting" sequence="0"/>
+
+	</data>
+</openerp>

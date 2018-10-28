@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+        <record id="tax_invoice_out_tree_inherit2" model="ir.ui.view">
+            <field name="name">tax_invoice_out_tree_inherit2</field>
+            <field name="model">tax.invoice.out</field>
+            <field name='inherit_id' ref='tax_invoice_out.tax_invoice_out_tree' />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="k3_sql"/>
+				</xpath>
+            </field>
+        </record>
+
+        <record id="tax_invoice_out_form_inherit2" model="ir.ui.view">
+            <field name="name">tax_invoice_out_form_inherit2</field>
+            <field name="model">tax.invoice.out</field>
+            <field name='inherit_id' ref='tax_invoice_out.tax_invoice_out_form' />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='tax_invoice_draft']" position="after">
+                    <button name='exp_k3_goods' string="生成K3物料" type="object" class="oe_highlight"  context="{'type':'out'}"/>
+                    <button name='exp_k3' string="生成K3销售发票" type="object" class="oe_highlight" />
+				</xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="k3_sql" required="1"/>
+				</xpath>
+                <xpath expr="//button[@name='button_excel']"  position="after">
+                    <button name="action_get_attachment_view"
+                        class="oe_stat_button"
+                        icon="fa-book"
+                        type="object">
+                        <field name="attachment_number" widget="statinfo" string="附件"/>
+                    </button>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="tax_invoice_in_form_inherit2" model="ir.ui.view">
+            <field name="name">tax_invoice_in_form_inherit2</field>
+            <field name="model">tax.invoice.in</field>
+            <field name='inherit_id' ref='tax_invoice_in.tax_invoice_in_form' />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='tax_invoice_draft']" position="after">
+                    <button name='exp_k3_goods' string="生成K3物料" type="object" class="oe_highlight"  context="{'type':'in'}"/>
+                    <button name='exp_k3' string="生成K3采购入库单" type="object" class="oe_highlight" />
+				</xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="k3_sql" required="1"/>
+				</xpath>
+                <xpath expr="//button[@name='button_excel']"  position="after">
+                    <button name="action_get_attachment_view"
+                        class="oe_stat_button"
+                        icon="fa-book"
+                        type="object">
+                        <field name="attachment_number" widget="statinfo" string="附件"/>
+                    </button>
+                </xpath>
+
+            </field>
+        </record>
+
+	</data>
+</openerp>

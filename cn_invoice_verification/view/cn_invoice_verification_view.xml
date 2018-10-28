@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+        <!--发票FORM-->
+        <record id="cn_account_invoice_form_inherit" model="ir.ui.view">
+            <field name="name">cn_account_invoice_form_inherit</field>
+            <field name="model">cn.account.invoice</field>
+            <field name='inherit_id' ref='cn_account_invoice.cn_account_invoice_form' />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="before">
+                    <div class="oe_edit_only">
+                        <group>
+                        <button name='get_img_code' string="取验证码" type="object" />
+                        <button name='to_verified' string="同步数据" type="object" />
+                        </group>
+                        <group>
+                            <field name='img' widget='image'
+                                        options='{"preview_image": "img", "width": "100%"}' width="180" height="70"/>
+                            <field name="img_note" readonly="1"/>
+                            <field name="img_code"/>
+                        </group>
+                    </div>
+				</xpath>
+            </field>
+        </record>
+
+
+        <!-- 更多Action -->
+        <record id="action_cn_invoice_verification" model="ir.actions.server">
+            <field name="name">验证</field>
+            <field name="model_id" ref="cn_account_invoice.model_cn_account_invoice"/>
+            <field name="state">code</field>
+            <field name="code">
+                if context.get('active_model') == 'cn.account.invoice' and context.get('active_ids'):
+                records.auto_verification()
+            </field>
+        </record>
+
+        <record id="ir_action_cn_invoice_verification" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'cn.account.invoice'" name="model"/>
+            <field name="name">验证</field>
+            <field eval="'ir.actions.server,%d'%action_cn_invoice_verification" name="value"/>
+        </record>
+
+	</data>
+</openerp>
