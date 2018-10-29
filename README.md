@@ -4,3 +4,4 @@ GOODERP在税务方面的实验
 注意：
     与GOODERP有同名模块，需要使用此包中文件。
     需要安装selenium,pymssql.
+    以前有安装过同名模块都需要升级模块。
