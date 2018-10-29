@@ -157,10 +157,8 @@ class GoodK3ErpOut(models.Model):
     def hebenginvoice(self, invoice):
         for line in invoice.line_ids:
             if line.product_amount < 0:
-                print line.product_name,invoice.name,line.product_amount
                 hebeng_line = self.env['cn.account.invoice.line'].search([('product_name', '=', line.product_name),('product_amount', '>=', abs(line.product_amount)),('order_id', '=', line.order_id.id)], limit = 1)
-                print hebeng_line
-                hebeng_line.write({'product_amount': line.product_amount+hebeng_line.product_amount,'note': u'合并产品%s，金额%s'%(line.product_name,line.product_amount)})
+                hebeng_line.write({'product_amount': line.product_amount+hebeng_line.product_amount,'product_tax': line.product_tax+hebeng_line.product_tax,'note': u'合并产品%s，金额%s'%(line.product_name,line.product_amount)})
                 line.unlink()
 
 
