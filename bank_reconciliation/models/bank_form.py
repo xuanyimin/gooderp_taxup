@@ -193,13 +193,37 @@ class BankForm(models.Model):
             bank_line.write({'is_voucher': True})
 
         elif bank_line.amount_out and bank_line.name and bank_line.note:
-            pass
+            print '99',bank_line.name,bank_line.note,bank_line.amount_out
+            k3_account_id = self.env['bank.form.config'].search(
+                [('type', '=', 'out'), ('is_normal', '=', False), ('company_id', '=', self.name.company_id.id),
+                 ('name', '=', bank_line.note)], limit=1)
+            if not k3_account_id:
+                return d
+            print bank_line.note,k3_account_id
+            account_name = k3_account_id.k3_account_name
+            account_code = k3_account_id.k3_account_code
+            amount = bank_line.amount_out
+            note = u"出纳提现金%s" % (bank_line.date)
+            xiangmu = ''
+            d += 1
+            self.createvoucherline(amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                                   xiangmu)
+            account_name2 = bank_name
+            account_code2 = bank_code
+            amount = bank_line.amount_out
+            note = u"%s付款" % (bank_line.date)
+            xiangmu2 = ''
+            d += 1
+            self.createvoucherline2(amount, excel, number, account_name2, account_code2, colnames, worksheet, d,
+                                    note,
+                                    xiangmu2)
+            bank_line.write({'is_voucher': True})
+
         # 入库且有客户名称找不到：利息收入
         elif bank_line.amount_out and not partner_out_code and bank_line.note:
             k3_account_id = self.env['bank.form.config'].search(
                 [('type', '=', 'out'), ('is_normal', '=', False), ('company_id', '=', self.name.company_id.id),
                  ('name', '=', bank_line.note)], limit=1)
-            print k3_account_id,bank_line.note
             if not k3_account_id:
                 return d
             account_name = k3_account_id.k3_account_name

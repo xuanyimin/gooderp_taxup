@@ -37,7 +37,8 @@ class create_bank_form_wizard(models.TransientModel):
     type = fields.Selection([('hzbank', u'湖州银行'),
                              ('acbcbank', u'工商银行'),
                              ('nsbank', u'农商银行'),
-                             ('xybank', u'兴业银行')], u'回单银行', default='hzbank')
+                             ('xybank', u'兴业银行'),
+                             ('bankcomm', u'交通银行'),], u'回单银行', default='hzbank')
 
     @api.multi
     def create_bank_form(self):
@@ -54,7 +55,7 @@ class create_bank_form_wizard(models.TransientModel):
         #取得行数
         ncows = table.nrows
         #取得第1行数据
-        if self.type in ['hzbank','acbcbank','nsbank']:
+        if self.type in ['hzbank','acbcbank','nsbank','bankcomm']:
             colnames =  table.row_values(1)
             list =[]
             newcows = 0
@@ -123,6 +124,18 @@ class create_bank_form_wizard(models.TransientModel):
             if self.type == 'nsbank':
                 amount_out = in_xls_data.get(u'汇出金额') and in_xls_data.get(u'汇出金额').replace(',', '').strip() or 0.00
                 amount_in = in_xls_data.get(u'汇入金额') and in_xls_data.get(u'汇入金额').replace(',', '').strip() or 0.00
+                self.env['bank.form.line'].create({
+                    'name': in_xls_data.get(u'对方户名') or '',
+                    'num': in_xls_data.get(u'对方账号') or '',
+                    'amount_in': float(amount_in),
+                    'amount_out': float(amount_out),
+                    'date': in_xls_data.get(u'交易时间'),
+                    'note': in_xls_data.get(u'摘要') or '',
+                    'purpose': in_xls_data.get(u'备注') or '',
+                    'order_id': order_id.id, })
+            if self.type == 'bankcomm':
+                amount_out = in_xls_data.get(u'借贷标志') and in_xls_data.get(u'借贷标志')==u'借' and in_xls_data.get(u'发生额').replace(',', '').strip() or 0.00
+                amount_in = in_xls_data.get(u'借贷标志') and in_xls_data.get(u'借贷标志')==u'贷' and in_xls_data.get(u'发生额').replace(',', '').strip() or 0.00
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方户名') or '',
                     'num': in_xls_data.get(u'对方账号') or '',
