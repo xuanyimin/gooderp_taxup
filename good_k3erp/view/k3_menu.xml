@@ -4,6 +4,8 @@
         <!-- 菜单加入税务模块 -->
         <menuitem id="menu_cn_account_producting" name='生产入库' action="cn_account_invoice_producting"
             parent="tax.tax_accounting" sequence="1"/>
+        <menuitem id="menu_cn_account_picking" name='原材料领用' action="cn_account_invoice_picking"
+            parent="tax.tax_accounting" sequence="1"/>
 
     </data>
 </openerp>

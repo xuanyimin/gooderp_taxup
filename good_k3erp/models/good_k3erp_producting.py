@@ -101,10 +101,10 @@ class GoodK3ErpProducting(models.Model):
 
         for i in excel:
             # 修改内容。
-            i[u'名称'] = line.product_name #名称
-            i[u'规格型号'] = line.product_type #规格型号
+            i[u'名称'] = line.product_name2 #名称
+            i[u'规格型号'] = "" #规格型号
             i[u'计量单位组_FName']=i[u'基本计量单位_FGroupName']=i[u'采购计量单位_FGroupName']=i[u'销售计量单位_FGroupName']=i[u'生产计量单位_FGroupName']=i[u'库存计量单位_FGroupName'] = groups_name #单位组
-            i[u'采购计量单位_FName'] = i[u'销售计量单位_FName'] = i[u'生产计量单位_FName'] = i[u'库存计量单位_FName']  =i[u'基本计量单位_FName']=line.product_unit #单位
+            i[u'采购计量单位_FName'] = i[u'销售计量单位_FName'] = i[u'生产计量单位_FName'] = i[u'库存计量单位_FName']  =i[u'基本计量单位_FName']=line.unit #单位
             i[u'存货科目代码_FNumber'] = self.k3_sql.stock_code_out #存货科目代码
             i[u'销售收入科目代码_FNumber'] = self.k3_sql.income_code_out #销售收入科目代码
             i[u'销售成本科目代码_FNumber'] = self.k3_sql.cost_code_out #销售成本科目代码
@@ -223,7 +223,7 @@ class GoodK3ErpProducting(models.Model):
 
     # 导出K3物料
     @api.multi
-    def exp_k3_goods(self,order = False):
+    def producting_product(self,order = False):
         xls_data = xlrd.open_workbook('./excel/good.xls')
         Page1 = xls_data.sheet_by_name('Page1')
         Page2 = xls_data.sheet_by_name('Page2')
@@ -248,17 +248,16 @@ class GoodK3ErpProducting(models.Model):
         for key in colnames:
             worksheet.write(0,j,key)
             j += 1
-        for invoice in self.line_ids:
-            for line in invoice.line_ids:
-                good_id = self.search_goods(conn,line)
-                if not good_id:
-                    if (line.product_name + line.product_type) in good:
-                        continue
-                    good.append(line.product_name + line.product_type)
-                    groups_name = self.search_groups_name(conn, line)[0]
-                    i += 1
-                    code = self.get_new_code(max_code,i)
-                    self.createexcel(excel, line, worksheet, i, groups_name.encode('latin-1').decode('gbk'), code, colnames)
+        for line in self.line_ids:
+            good_id = self.search_goods(conn,line)
+            if not good_id:
+                if line.product_name2 in good:
+                    continue
+                good.append(line.product_name2)
+                groups_name = self.search_groups_name(conn, line)[0]
+                i += 1
+                code = self.get_new_code(max_code,i)
+                self.createexcel(excel, line, worksheet, i, groups_name, code, colnames)
 
         workbook.save(u'goods.xls')
         self.closeConnection(conn)
@@ -266,9 +265,9 @@ class GoodK3ErpProducting(models.Model):
         f = open('goods.xls', 'rb')
         self.env['ir.attachment'].create({
             'datas': base64.b64encode(f.read()),
-            'name': u'K3销售物料导出',
+            'name': u'K3产成品物料导出',
             'datas_fname': u'%s物料%s.xls' % (self.k3_sql.name, self.name.name),
-            'res_model': 'tax.invoice.out',
+            'res_model': 'tax.invoice.producting',
             'res_id': self.id, })
 
     @api.multi
@@ -325,7 +324,7 @@ class GoodK3ErpProducting(models.Model):
     def search_goods(self, conn, line):
         cursor = conn.cursor()
         sql = "select fnumber,fname,fmodel from t_ICItem WHERE fname='%s' and fmodel='%s';"
-        values = (line.product_name, line.product_type)
+        values = (line.product_name2, "")
         cursor.execute(sql%values)
         good_id = cursor.fetchone()
         if good_id:

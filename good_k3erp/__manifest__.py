@@ -16,10 +16,11 @@
     'version': '11.11',
     'depends': ['tax','tax_invoice_out'],
     'data': [
-         'view/good_k3_view.xml',
+        'view/k3_view_picking.xml',
+        'view/k3_view.xml',
+        'view/good_k3_view.xml',
         'view/k3_action.xml',
         'view/k3_menu.xml',
-        'view/k3_view.xml',
         # 'security/ir.model.access.csv',
     ],
     'demo': [

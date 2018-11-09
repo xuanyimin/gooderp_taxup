@@ -9,5 +9,12 @@
 
         </record>
 
+        <record id="cn_account_invoice_picking" model="ir.actions.act_window">
+            <field name="name">生产领料</field>
+            <field name="res_model">tax.invoice.picking</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
 	</data>
 </openerp>
