@@ -68,6 +68,12 @@
                                     <field name="stock_code_out" required="1"/>
                                 </group>
                             </page>
+                            <page string="领料">
+                                <group>
+                                    <field name="ke_picking_id" required="1"/>
+                                    <field name="ke_picking_name" required="1"/>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
                 </form>
@@ -185,6 +191,33 @@
 				</field>
             </field>
         </record>
+
+        <!-- 引入税收分类编码  -->
+        <record id="create_tax_category_form" model="ir.ui.view">
+            <field name="name">create_tax_category_form</field>
+            <field name="model">create.tax.category.wizard</field>
+            <field name="arch" type="xml">
+            	<form>
+            		<group>
+						<field name="spfwssflbm" string="导入税收分类编码" />
+                    </group>
+                    <footer>
+                        <button name="create_tax_category"  string="引入" type="object" class="oe_highlight"/>
+                        或者
+                        <button string="取消" class="oe_link" special="cancel"/>
+                    </footer>
+            	</form>
+            </field>
+        </record>
+
+        <act_window id="import_tax_config_action"
+        	name='引入税收分类编码'
+	        res_model="create.tax.category.wizard"
+	        multi="True"
+	        view_type="form"
+	        view_mode="form"
+	        target="new"
+	        />
 
 	</data>
 </openerp>

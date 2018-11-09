@@ -9,18 +9,20 @@
 #    published by the Free Software Foundation, either version 3 of the
 #    License, or (at your option) any later version.
 #
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    This program is distributed in the hope that it ied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+#will be useful,
+#    but WITHOUT ANY WARRANTY; without even the impl
 ##############################################################################
 
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError
+from lxml import etree
+import base64
 
 try:
     import xml.etree.cElementTree as ET
@@ -135,6 +137,8 @@ class k3_category(models.Model):
     income_code_out = fields.Char(u'销售收入代码')
     ke_sale_id = fields.Char(u'K3销售往来科目代码')
     ke_sale_name = fields.Char(u'K3销售往来科目名称')
+    ke_picking_id = fields.Char(u'K3生产领用科目代码')
+    ke_picking_name = fields.Char(u'K3生产领用科目名称')
     cost_code_out = fields.Char(u'销售成本代码')
     stock_code_out = fields.Char(u'销售库存代码')
     tax_category_ids = fields.Many2many('tax.category',string = '原材料税收分类')
@@ -269,3 +273,22 @@ class TaxConfigWizard(models.TransientModel):
         res = self.env['ir.values'].set_default(
             'tax.config.settings', 'default_dmpt_password', self.default_dmpt_password)
         return res
+
+class create_tax_category_wizard(models.TransientModel):
+    _name = 'create.tax.category.wizard'
+    _description = 'Tax Category Import'
+
+    spfwssflbm = fields.Binary(u'导入航天系统的spfwssflbm', )
+
+    @api.multi
+    def create_tax_category(self):
+        """
+        导入航天系统的spfwssflbm信息到tax.category
+        """
+        print base64.b64decode(self.spfwssflbm)
+        data = etree.HTML(base64.b64decode(self.spfwssflbm))
+        print data.text
+        for bbox in data.xpath('//bmxx'):
+            app ={}
+            print bbox
+        pass
