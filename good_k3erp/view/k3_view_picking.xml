@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+        <!--产成品入库tree-->
+        <record id='tax_invoice_picking_tree' model='ir.ui.view'>
+			<field name='name'>tax_invoice_picking_tree</field>
+			<field name='model'>tax.invoice.picking</field>
+			<field name='arch' type='xml'>
+				<tree string='产成品入库单'>
+                    <field name='name'/>
+                    <field name='k3_sql'/>
+                    <field name='state'/>
+				</tree>
+			</field>
+		</record>
+        <!--产成品入库Form-->
+        <record id='tax_invoice_picking_form' model='ir.ui.view'>
+			<field name='name'>tax_invoice_picking_form</field>
+			<field name='model'>tax.invoice.picking</field>
+			<field name='arch' type='xml'>
+                <form string="产成品入库单">
+                    <header>
+                        <button name='picking_order' states="draft" string="材料领料单" type="object" class="oe_highlight"/>
+	                    <field name="state" widget="statusbar" readonly="1"/>
+	                </header>
+			    	<sheet>
+                        <div class="oe_button_box" name="button_box">
+                                <button type="object"
+                                        string="引入excel"
+                                        name="button_excel"
+                                        class="oe_stat_button"
+                                        icon="fa-list-alt">
+                                </button>
+                                <button name="action_get_attachment_view"
+                                    class="oe_stat_button"
+                                    icon="fa-book"
+                                    type="object">
+                                    <field name="attachment_number" widget="statinfo" string="附件"/>
+                                </button>
+                        </div>
+                        <group>
+                            <field name='name'/>
+                            <field name='k3_sql'/>
+                        </group>
+                        <notebook>
+                            <page string="产品明细">
+                                <field name="line_ids" widget="many2many" options="{'not_delete': True, 'reload_on_button': True, 'no_create': True}">
+                                    <tree string="明细行" editable="bottom">
+                                        <field name="product_code"/>
+                                        <field name="product_name"/>
+                                        <field name="product_name2"/>
+                                        <field name="unit"/>
+                                        <field name="number"/>
+                                        <field name="price"/>
+                                        <field name="amount"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                </form>
+			</field>
+		</record>
+
+        <!-- 引入excel action -->
+
+        <record id="create_tax_picking_wizard_form" model="ir.ui.view">
+            <field name="name">create_tax_picking_wizard_form</field>
+            <field name="model">create.tax.picking.wizard</field>
+            <field name="arch" type="xml">
+            	<form>
+            		<group>
+						<field name="excel"/>
+                    </group>
+                    <footer>
+                        <button name="create_picking"  string="引入" type="object" class="oe_highlight"/>
+                        或者
+                        <button string="取消" class="oe_link" special="cancel"/>
+                    </footer>
+            	</form>
+            </field>
+        </record>
+
+        <act_window id="create_tax_picking_wizard_action"
+            name="引入excel"
+            src_model="tax.invoice.picking"
+            res_model="create.tax.picking.wizard"
+            view_type="form"
+            view_mode="form"
+            target="new"/>
+
+	</data>
+</openerp>
