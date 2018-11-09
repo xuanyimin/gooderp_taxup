@@ -49,6 +49,9 @@ class BankForm(models.Model):
                                states=READONLY_STATES, copy=False)
     state = fields.Selection([('draft', u'草稿'),
                               ('done', u'已结束')], u'状态', default='draft')
+    is_tour = fields.Boolean(u'旅游公司')
+    pos_id = fields.Char(u'K3_POS代码')
+    pos_name = fields.Char(u'K3K3_POS名称')
     attachment_number = fields.Integer(compute='_compute_attachment_number', string=u'附件号')
 
     @api.multi
@@ -115,8 +118,13 @@ class BankForm(models.Model):
         bank_name = self.name.k3_account_name
         bank_code = self.name.k3_account_code
         kehu_name = bank_line.note
-        if bank_line.amount_in:
+        if self.is_tour:
+            kehu_code_name = '%s---%s' % (self.pos_id, self.pos_name)
+        elif bank_line.amount_in:
             partner_in_code = self.search_organization(conn, bank_line.name)
+            ku_name = bank_line.name
+            ke_code = partner_in_code[0]
+            kehu_code_name = '%s---%s'%(ke_code,ku_name)
         # 入库且有客户名称能找到：一般单证
         if bank_line.amount_in and partner_in_code:
             account_name = bank_name
@@ -129,11 +137,9 @@ class BankForm(models.Model):
             k3_account_id = self.env['bank.form.config'].search([('type','=','in'),('is_normal', '=', True ),('company_id', '=', self.name.company_id.id)], limit = 1)
             account_name2 = k3_account_id.k3_account_name
             account_code2 = k3_account_id.k3_account_code
-            ku_name = bank_line.name
-            ke_code = partner_in_code[0]
             amount = bank_line.amount_in
             note = u"%s收款" % (bank_line.date)
-            xiangmu2 = u'客户---%s---%s' % (ke_code, ku_name)
+            xiangmu2 = u'客户---%s' % (kehu_code_name)
             d += 1
             self.createvoucherline2(amount, excel, number, account_name2, account_code2, colnames, worksheet, d, note, xiangmu2)
             bank_line.write({'is_voucher': True})

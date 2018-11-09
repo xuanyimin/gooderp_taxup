@@ -44,7 +44,9 @@
 						<group>
 							<field name="name"/>
                             <field name="period_id"/>
-                            <field name="begin_id"/>
+                            <field name="is_tour"/>
+                            <field name="pos_id" attrs="{'invisible': [('is_tour', '=', False)],'required':[('is_tour', '=', True)]}" />
+                            <field name="pos_name" attrs="{'invisible': [('is_tour', '=', False)],'required':[('is_tour', '=', True)]}" />
                         </group>
                         <notebook>
                             <page string="发票明细">

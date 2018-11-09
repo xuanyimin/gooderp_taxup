@@ -38,7 +38,19 @@ class create_bank_form_wizard(models.TransientModel):
                              ('acbcbank', u'工商银行'),
                              ('nsbank', u'农商银行'),
                              ('xybank', u'兴业银行'),
-                             ('bankcomm', u'交通银行'),], u'回单银行', default='hzbank')
+                             ('bankcomm', u'交通银行'),
+                             ('hangzhoubank', u'杭州银行'),], u'回单银行', default='hzbank')
+
+    @api.multi
+    def old_order_dateandamount(self,order_id):
+        list =[]
+        app ={}
+        for line in order_id.line_ids:
+            date = datetime.datetime.strptime(line.date,"%Y-%m-%d %H:%M:%S")
+            app[date] = line.amount_in or line.amount_out
+            list.append(app)
+        return list
+
 
     @api.multi
     def create_bank_form(self):
@@ -46,7 +58,6 @@ class create_bank_form_wizard(models.TransientModel):
         通过Excel文件导入信息到hospital.invoice
         """
         order_id = self.env['bank.form'].browse(self.env.context.get('active_id'))
-        print order_id
         if not order_id:
             return {}
         xls_data = xlrd.open_workbook(
@@ -67,9 +78,11 @@ class create_bank_form_wizard(models.TransientModel):
                        app[colnames[i]] = row[i]
                     #过滤掉不需要的行，详见销货清单的会在清单中再次导入
                     if app.get(u'交易日期') or app.get(u'交易时间'):
+                        if app.get(u'交易时间') == u'借方交易笔数:':
+                            continue
                         list.append(app)
                         newcows += 1
-        if self.type in ['xybank']:
+        if self.type in ['xybank','hangzhoubank']:
             colnames = table.row_values(0)
             list = []
             newcows = 0
@@ -84,11 +97,16 @@ class create_bank_form_wizard(models.TransientModel):
                         list.append(app)
                         newcows += 1
         #数据读入。
+        old_order_dateandamount = self.old_order_dateandamount(order_id)
         for data in range(0,newcows):
             in_xls_data = list[data]
             if self.type == 'hzbank':
                 amount_out = in_xls_data.get(u'支出') and in_xls_data.get(u'支出').replace(',', '').strip() or 0.00
                 amount_in = in_xls_data.get(u'收入') and in_xls_data.get(u'收入').replace(',', '').strip() or 0.00
+                amount = amount_out or amount_in
+                check = {in_xls_data.get(u'交易日期'):amount}
+                if check in old_order_dateandamount:
+                    continue
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方户名') or '',
                     'num': in_xls_data.get(u'对方账/卡号') or '',
@@ -97,9 +115,28 @@ class create_bank_form_wizard(models.TransientModel):
                     'date': in_xls_data.get(u'交易日期'),
                     'note':in_xls_data.get(u'摘要') or '',
                     'order_id':order_id.id,})
+            if self.type == 'hangzhoubank':
+                amount_out = in_xls_data.get(u'借方金额') and in_xls_data.get(u'借方金额').replace(',', '').strip() or 0.00
+                amount_in = in_xls_data.get(u'贷方金额') and in_xls_data.get(u'贷方金额').replace(',', '').strip() or 0.00
+                amount = amount_out or amount_in
+                check = {in_xls_data.get(u'交易日期'): amount}
+                if check in old_order_dateandamount:
+                    continue
+                self.env['bank.form.line'].create({
+                    'name': in_xls_data.get(u'对方户名') or '',
+                    'num': in_xls_data.get(u'对方账/卡号') or '',
+                    'amount_in': float(amount_in),
+                    'amount_out': float(amount_out),
+                    'date': in_xls_data.get(u'交易日期')+u" "+in_xls_data.get(u'交易时间'),
+                    'note': in_xls_data.get(u'附言') or '',
+                    'order_id': order_id.id,})
             if self.type == 'xybank':
                 amount_out = in_xls_data.get(u'贷方金额') and in_xls_data.get(u'贷方金额').replace(',', '').strip() or 0.00
                 amount_in = in_xls_data.get(u'借方金额') and in_xls_data.get(u'借方金额').replace(',', '').strip() or 0.00
+                amount = amount_out or amount_in
+                check = {in_xls_data.get(u'交易日期'): amount}
+                if check in old_order_dateandamount:
+                    continue
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方户名') or '',
                     'num': in_xls_data.get(u'对方账号') or '',
@@ -112,6 +149,13 @@ class create_bank_form_wizard(models.TransientModel):
             if self.type == 'acbcbank':
                 amount_out = in_xls_data.get(u'借方发生额') and in_xls_data.get(u'借方发生额').replace(',', '').strip() or 0.00
                 amount_in = in_xls_data.get(u'贷方发生额') and in_xls_data.get(u'贷方发生额').replace(',', '').strip() or 0.00
+                amount = amount_out or amount_in
+                date = datetime.datetime.strptime(in_xls_data.get(u'交易时间'), "%Y-%m-%d %H:%M:%S")
+                check = {date: amount}
+                print check,old_order_dateandamount
+                if check in old_order_dateandamount:
+                    print '1'
+                    continue
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方单位名称') or '',
                     'num': in_xls_data.get(u'对方账号') or '',
@@ -124,6 +168,10 @@ class create_bank_form_wizard(models.TransientModel):
             if self.type == 'nsbank':
                 amount_out = in_xls_data.get(u'汇出金额') and in_xls_data.get(u'汇出金额').replace(',', '').strip() or 0.00
                 amount_in = in_xls_data.get(u'汇入金额') and in_xls_data.get(u'汇入金额').replace(',', '').strip() or 0.00
+                amount = amount_out or amount_in
+                check = {in_xls_data.get(u'交易时间'): amount}
+                if check in old_order_dateandamount:
+                    continue
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方户名') or '',
                     'num': in_xls_data.get(u'对方账号') or '',
@@ -136,6 +184,10 @@ class create_bank_form_wizard(models.TransientModel):
             if self.type == 'bankcomm':
                 amount_out = in_xls_data.get(u'借贷标志') and in_xls_data.get(u'借贷标志')==u'借' and in_xls_data.get(u'发生额').replace(',', '').strip() or 0.00
                 amount_in = in_xls_data.get(u'借贷标志') and in_xls_data.get(u'借贷标志')==u'贷' and in_xls_data.get(u'发生额').replace(',', '').strip() or 0.00
+                amount = amount_out or amount_in
+                check = {in_xls_data.get(u'交易时间'): amount}
+                if check in old_order_dateandamount:
+                    continue
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方户名') or '',
                     'num': in_xls_data.get(u'对方账号') or '',
