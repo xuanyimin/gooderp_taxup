@@ -12,8 +12,8 @@
     'depends': ['tax'],
     'data': [
         'view/cn_account_invoice_view.xml',
-        'view/k3_action.xml',
-        'view/k3_menu.xml',
+        'view/cn_account_invoice_action.xml',
+        'view/cn_account_invoice_menu.xml',
         'security/ir.model.access.csv',
     ],
     'demo': [
