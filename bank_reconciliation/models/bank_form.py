@@ -118,15 +118,17 @@ class BankForm(models.Model):
         bank_name = self.name.k3_account_name
         bank_code = self.name.k3_account_code
         kehu_name = bank_line.note
+        partner_in_code = self.search_organization(conn, bank_line.name)
         if self.is_tour:
             kehu_code_name = '%s---%s' % (self.pos_id, self.pos_name)
+            partner_in_code = True
         elif bank_line.amount_in:
-            partner_in_code = self.search_organization(conn, bank_line.name)
             ku_name = bank_line.name
             if partner_in_code:
                 ke_code = partner_in_code[0]
                 kehu_code_name = '%s---%s'%(ke_code,ku_name)
         # 入库且有客户名称能找到：一般单证
+        print partner_in_code
         if bank_line.amount_in and partner_in_code:
             account_name = bank_name
             account_code = bank_code
