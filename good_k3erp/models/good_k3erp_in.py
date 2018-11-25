@@ -262,7 +262,7 @@ class GoodK3ErpIn(models.Model):
             j += 1
         for invoice in self.line_ids:
             for line in invoice.line_ids:
-                type = self.env['tax.category'].search([('name','=',line.tax_type)],limit=1)
+                type = self.env['tax.category'].search([('print_name','=',line.tax_type)],limit=1)
                 if type not in tax_type:
                     invoice.write({'is_cailiao': False})
                     continue

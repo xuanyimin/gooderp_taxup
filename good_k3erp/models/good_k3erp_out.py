@@ -36,6 +36,9 @@ class GoodK3ErpOut(models.Model):
 
     k3_sql = fields.Many2one('k3.category', u'自方公司', copy=False)
     attachment_number = fields.Integer(compute='_compute_attachment_number', string=u'附件号')
+    is_tour = fields.Boolean(u'旅游公司')
+    pos_id = fields.Char(u'K3_POS代码')
+    pos_name = fields.Char(u'K3_POS名称')
 
     @api.multi
     def action_get_attachment_view(self):
@@ -208,6 +211,126 @@ class GoodK3ErpOut(models.Model):
             'res_model': 'tax.invoice.out',
             'res_id': self.id, })
 
+    # 导出K3销售凭证
+    @api.multi
+    def exp_k3_voucher(self):
+        xls_data = xlrd.open_workbook('./excel/moban.xls')
+        Page1 = xls_data.sheet_by_name('Page1')
+        Page2 = xls_data.sheet_by_name('t_Schema')
+        # 连接数据库
+        conn = self.createConnection()
+        excel, colnames = self.env['tax.invoice.out'].readexcel(Page1)  # 读模版，返回字典及表头数组
+        workbook = xlwt.Workbook(encoding='utf-8')  # 生成文件
+        worksheet = workbook.add_sheet(u'Page1')  # 在文件中创建一个名为Page1的sheet
+        worksheet2 = workbook.add_sheet(u't_Schema')
+        self.env['tax.invoice.out'].worksheetcopy(Page2, worksheet2)
+
+        i = j = 0
+        number = 1
+        for key in colnames:
+            worksheet.write(0, j, key)
+            j += 1
+        for invoice in self.line_ids:
+            i = self.createvoucher(conn, excel[0], worksheet, i, number, colnames, invoice)
+            number += 1
+
+        workbook.save(u'voucher.xls')
+        self.closeConnection(conn)
+
+        # 生成附件
+        f = open('voucher.xls', 'rb')
+        self.env['ir.attachment'].create({
+            'datas': base64.b64encode(f.read()),
+            'name': u'K3销售凭证导入',
+            'datas_fname': u'%s销售凭证%s.xls' % (self.k3_sql.name, self.name.name),
+            'res_model': 'tax.invoice.out',
+            'res_id': self.id, })
+
+    @api.multi
+    def createvoucher(self, conn, excel, worksheet, d, number, colnames, invoice):
+        account_name = self.k3_sql.ke_sale_name
+        account_code = self.k3_sql.ke_sale_id
+        amount = invoice.invoice_amount+invoice.invoice_tax
+        note = u"%s发票%s" % (invoice.invoice_date,invoice.name)
+        xiangmu = u'客户---%s---%s' % (self.pos_id, self.pos_name)
+        d += 1
+        self.createvoucherline(amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                               xiangmu)
+        for line in invoice.line_ids:
+            tax_category_ids = self.env['tax.category'].search([('print_name','=',line.tax_type)])
+            for sale_code_ids in self.k3_sql.jd_sale_code:
+                for sale_code_id in sale_code_ids:
+                    if sale_code_id.tax_category_ids in tax_category_ids:
+                        account_name2 = sale_code_ids.name
+                        account_code2 = sale_code_ids.code
+
+        amount2 = invoice.invoice_amount
+        note = u"%s收入" % (invoice.invoice_date)
+        xiangmu2 = ''
+        d += 1
+        self.createvoucherline2(amount2, excel, number, account_name2, account_code2, colnames, worksheet, d,note,xiangmu2)
+
+        account_name3 = self.k3_sql.ke_sale_tax_name
+        account_code3 = self.k3_sql.ke_sale_tax_id
+        amount3 = invoice.invoice_tax
+        note = u"%s销项" % (invoice.invoice_date)
+        xiangmu3 = ''
+        d += 1
+        self.createvoucherline2(amount3, excel, number, account_name3, account_code3, colnames, worksheet, d, note,
+                                xiangmu3)
+
+        return d
+
+    @api.multi
+    def createvoucherline(self, amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                          xiangmu):
+        # 修改内容。
+        excel[u'凭证日期'] = excel[u'业务日期'] = self.env['finance.period'].get_period_month_date_range(self.name)[
+            1]  # 会计期间的最后一天
+        excel[u'会计年度'] = self.name.year
+        excel[u'会计期间'] = self.name.month
+        excel[u'凭证号'] = excel[u'序号'] = number
+        excel[u'科目代码'] = account_code
+        excel[u'科目名称'] = account_name
+        excel[u'原币金额'] = amount
+        excel[u'借方'] = amount
+        excel[u'贷方'] = 0
+        excel[u'制单'] = u'宣一敏'
+        excel[u'凭证摘要'] = note
+        excel[u'附件数'] = '1'
+        excel[u'分录序号'] = 0
+        excel[u'核算项目'] = xiangmu
+        j = 0
+        for key in colnames:
+            # 写入excel
+            worksheet.write(d, j, excel[key])
+            j += 1
+
+    @api.multi
+    def createvoucherline2(self, amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                           xiangmu):
+        # 修改内容。
+        excel[u'凭证日期'] = excel[u'业务日期'] = self.env['finance.period'].get_period_month_date_range(self.name)[
+            1]  # 会计期间的最后一天
+        excel[u'会计年度'] = self.name.year
+        excel[u'会计期间'] = self.name.month
+        excel[u'凭证号'] = excel[u'序号'] = number
+        excel[u'科目代码'] = account_code
+        excel[u'科目名称'] = account_name
+        excel[u'原币金额'] = amount
+        excel[u'借方'] = 0
+        excel[u'贷方'] = amount
+        excel[u'制单'] = u'宣一敏'
+        excel[u'凭证摘要'] = note
+        excel[u'附件数'] = '1'
+        excel[u'分录序号'] = 1
+        excel[u'核算项目'] = xiangmu
+        j = 0
+        for key in colnames:
+            # 写入excel
+            worksheet.write(d, j, excel[key])
+            j += 1
+
     # 导出K3物料
     @api.multi
     def exp_k3_goods(self,order = False):
@@ -245,7 +368,7 @@ class GoodK3ErpOut(models.Model):
                     groups_name = self.search_groups_name(conn, line)[0]
                     i += 1
                     code = self.get_new_code(max_code,i)
-                    self.createexcel(excel, line, worksheet, i, groups_name.encode('latin-1').decode('gbk'), code, colnames)
+                    self.createexcel(excel, line, worksheet, i, groups_name, code, colnames)
 
         workbook.save(u'goods.xls')
         self.closeConnection(conn)
@@ -260,6 +383,7 @@ class GoodK3ErpOut(models.Model):
 
     @api.multi
     def get_new_code(self, code, i):
+        print code
         old_code = code.split('.')
         if len(old_code) == 1:
             a = old_code

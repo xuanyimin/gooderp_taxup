@@ -19,11 +19,15 @@
             <field name='inherit_id' ref='tax_invoice_out.tax_invoice_out_form' />
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='tax_invoice_draft']" position="after">
-                    <button name='exp_k3_goods' string="生成K3物料" type="object" class="oe_highlight"  context="{'type':'out'}"/>
-                    <button name='exp_k3' string="生成K3销售发票" type="object" class="oe_highlight" />
+                    <button name='exp_k3_goods' string="生成K3物料" type="object" class="oe_highlight"  context="{'type':'out'}" attrs="{'invisible': [('is_tour', '=', True)]}"/>
+                    <button name='exp_k3' string="生成K3销售发票" type="object" class="oe_highlight" attrs="{'invisible': [('is_tour', '=', True)]}"/>
+                    <button name='exp_k3_voucher' string="生成K销售凭证" type="object" class="oe_highlight" attrs="{'invisible': [('is_tour', '=', False)]}"/>
 				</xpath>
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="k3_sql" required="1"/>
+                    <field name='is_tour'/>
+                    <field name='pos_id' attrs="{'invisible': [('is_tour', '=', False)],'required':[('is_tour', '=', True)]}"/>
+                    <field name='pos_name' attrs="{'invisible': [('is_tour', '=', False)],'required':[('is_tour', '=', True)]}"/>
 				</xpath>
                 <xpath expr="//button[@name='button_excel']"  position="after">
                     <button name="action_get_attachment_view"
