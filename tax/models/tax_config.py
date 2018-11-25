@@ -130,6 +130,8 @@ class k3_category(models.Model):
 
     code = fields.Char(u'对应数据库帐套', required=True, help=u'帐套管理中的数据库实体')
     name = fields.Char(u'公司名称', required=True,)
+    is_tour = fields.Boolean(u'旅游公司')
+    jd_sale_code = fields.One2many('ly.sale.line','order_id', u'高级分类',copy=False,)
     is_manage= fields.Boolean(u'高级模式')
     income_code_in = fields.Char(u'采购收入代码')
     cost_code_in = fields.Char(u'采购成本代码')
@@ -137,6 +139,8 @@ class k3_category(models.Model):
     income_code_out = fields.Char(u'销售收入代码')
     ke_sale_id = fields.Char(u'K3销售往来科目代码')
     ke_sale_name = fields.Char(u'K3销售往来科目名称')
+    ke_sale_tax_id = fields.Char(u'K3销售税金科目代码')
+    ke_sale_tax_name = fields.Char(u'K3销售税金科目名称')
     ke_picking_id = fields.Char(u'K3生产领用科目代码')
     ke_picking_name = fields.Char(u'K3生产领用科目名称')
     cost_code_out = fields.Char(u'销售成本代码')
@@ -292,3 +296,14 @@ class create_tax_category_wizard(models.TransientModel):
             app ={}
             print bbox
         pass
+
+class LySaleLine(models.Model):
+    _name = 'ly.sale.line'
+    _description = u'旅游公司收入分类'
+
+    order_id = fields.Many2one('k3.category', u'公司编号', index=True,
+                               required=True, ondelete='cascade',
+                               help=u'关联公司编号')
+    code = fields.Char(u'销售收入代码')
+    name = fields.Char(u'销售收入名称')
+    tax_category_ids = fields.Many2many('tax.category',string = '税收分类编码')

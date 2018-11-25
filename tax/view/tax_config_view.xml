@@ -38,10 +38,16 @@
                                 <field name='name'/>
                                 <field name='code'/>
                                 <field name="is_manage"/>
+                                <field name="is_tour"/>
+                                <field name="ke_sale_id" required="1"/>
+                                <field name="ke_sale_name"  required="1"/>
+                                <field name="ke_sale_tax_id" attrs="{'invisible': [('is_tour', '=', False)],'required':[('is_tour', '=', True)]}" />
+                                <field name="ke_sale_tax_name" attrs="{'invisible': [('is_tour', '=', False)],'required':[('is_tour', '=', True)]}" />
 							</group>
                         </group>
                         <notebook>
                             <page string="采购">
+
                                 <field name="category_lines" editable="bottom" attrs="{'invisible': [('is_manage', '=', False)]}">
                                      <tree string="高级配置明细" editable="bottom">
                                          <field name="tax_category_ids"/>
@@ -60,12 +66,17 @@
                                 </group>
                             </page>
                             <page string="销售">
-                                <group>
-                                    <field name="ke_sale_id" required="1"/>
-                                    <field name="ke_sale_name" required="1"/>
-                                    <field name="income_code_out" required="1"/>
-                                    <field name="cost_code_out" required="1"/>
-                                    <field name="stock_code_out" required="1"/>
+                                <field name="jd_sale_code" editable="bottom" attrs="{'invisible': [('is_tour', '=', False)]}">
+                                     <tree string="旅游公司收入明细" editable="bottom">
+                                         <field name="name"/>
+                                         <field name="code"/>
+                                         <field name="tax_category_ids"/>
+                                     </tree>
+                                </field>
+                                <group attrs="{'invisible': [('is_tour', '=', True)]}">
+                                    <field name="income_code_out" attrs="{'invisible': [('is_tour', '=', True)],'required':[('is_tour', '=', False)]}" />
+                                    <field name="cost_code_out" attrs="{'invisible': [('is_tour', '=', True)],'required':[('is_tour', '=', False)]}" />
+                                    <field name="stock_code_out" attrs="{'invisible': [('is_tour', '=', True)],'required':[('is_tour', '=', False)]}" />
                                 </group>
                             </page>
                             <page string="领料">
