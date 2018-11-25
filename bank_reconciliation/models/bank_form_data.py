@@ -101,8 +101,8 @@ class create_bank_form_wizard(models.TransientModel):
         for data in range(0,newcows):
             in_xls_data = list[data]
             if self.type == 'hzbank':
-                amount_out = in_xls_data.get(u'支出') and in_xls_data.get(u'支出').replace(',', '').strip() or 0.00
-                amount_in = in_xls_data.get(u'收入') and in_xls_data.get(u'收入').replace(',', '').strip() or 0.00
+                amount_out = in_xls_data.get(u'支出') and in_xls_data.get(u'支出').replace(',', '').replace('￥', '').strip() or 0.00
+                amount_in = in_xls_data.get(u'收入') and in_xls_data.get(u'收入').replace(',', '').replace('￥', '').strip() or 0.00
                 amount = amount_out or amount_in
                 check = {in_xls_data.get(u'交易日期'):amount}
                 if check in old_order_dateandamount:
