@@ -20,6 +20,7 @@
 			<field name='arch' type='xml'>
                 <form string="银行对帐单">
 	                <header>
+                        <button name='check_partner' states="draft" string="检查客户和供应商" type="object" class="oe_highlight" />
                         <button name='exp_k3_bank_voucher' states="draft" string="生成K3银行凭证" type="object" class="oe_highlight" />
                         <button name='tax_invoice_done' states="draft" string="确认" type="object" class="oe_highlight"/>
 	                	<button name='tax_invoice_draft' states="done" string="反确认" type="object" />
