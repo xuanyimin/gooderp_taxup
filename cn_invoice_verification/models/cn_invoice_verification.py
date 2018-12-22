@@ -94,7 +94,6 @@ class cn_account_invoice(models.Model):
             img = imgelement.get_attribute('src').split(",")[-1]
         # 取图片说明
         img_note = driver.find_element_by_id("yzminfo").text
-        print img
         self.write({'img': img, 'img_note': img_note})
         # 处理base64代码不足报错
         missing_padding = 4 - len(img) % 4
@@ -272,7 +271,6 @@ class cn_account_invoice(models.Model):
         #上传图片
         username = self.env['ir.values'].get_default('tax.config.settings', 'default_dmpt_name')
         password = self.env['ir.values'].get_default('tax.config.settings', 'default_dmpt_password')
-        print username,password
         soft_id = '99787'
         soft_key = '6cff6c2ab82049bb9050e31a5fe2b115'
         base_param = {
@@ -307,7 +305,6 @@ class cn_account_invoice(models.Model):
     def auto_verification(self):
         self.get_img_code()
         img_code = self.get_code()
-        print img_code
         self.img_code = img_code.get(u'Result')
         self.to_verified()
 
