@@ -383,7 +383,6 @@ class GoodK3ErpOut(models.Model):
 
     @api.multi
     def get_new_code(self, code, i):
-        print code
         old_code = code.split('.')
         if len(old_code) == 1:
             a = old_code

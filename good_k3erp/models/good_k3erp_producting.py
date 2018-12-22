@@ -270,6 +270,133 @@ class GoodK3ErpProducting(models.Model):
             'res_model': 'tax.invoice.producting',
             'res_id': self.id, })
 
+    # 导出K3凭证
+    @api.multi
+    def producting_voucher(self):
+        xls_data = xlrd.open_workbook('./excel/moban.xls')
+        Page1 = xls_data.sheet_by_name('Page1')
+        Page2 = xls_data.sheet_by_name('t_Schema')
+        # 连接数据库
+        conn = self.createConnection()
+        excel, colnames = self.env['tax.invoice.out'].readexcel(Page1)  # 读模版，返回字典及表头数组
+        workbook = xlwt.Workbook(encoding='utf-8')  # 生成文件
+        worksheet = workbook.add_sheet(u'Page1')  # 在文件中创建一个名为Page1的sheet
+        worksheet2 = workbook.add_sheet(u't_Schema')
+        self.env['tax.invoice.out'].worksheetcopy(Page2, worksheet2)
+
+        i = j = 0
+        number = 0
+        for key in colnames:
+            worksheet.write(0, j, key)
+            j += 1
+
+        product_names = {}
+        amount1 = amount2 = amount3 =0
+        for line in self.line_ids:
+            i = self.createvoucher(conn, excel[0], worksheet, i, number, colnames, line)
+            number += 1
+            amount1 += line.material
+            amount2 += line.artificial
+            amount3 += line.manufacturing
+            product_names.update({u'直接材料':amount1})
+            product_names.update({u'一般工人工资': amount2})
+            product_names.update({u'制造费用汇总': amount3})
+        for key in product_names:
+            i += 1
+            key_amount = round(product_names.get(key),2)
+            account_name = key
+            account = self.search_account_code(conn,account_name)
+            if account:
+                account_code = account[0]
+            note = u'本月生产'
+            xiangmu = u''
+            self.createvoucherline2(key_amount, excel[0], number, account_name, account_code, colnames, worksheet, i, note,xiangmu)
+
+
+        workbook.save(u'voucher.xls')
+        self.closeConnection(conn)
+        # 生成附件
+        f = open('voucher.xls', 'rb')
+        self.env['ir.attachment'].create({
+            'datas': base64.b64encode(f.read()),
+            'name': u'K3音王产成品入库',
+            'datas_fname': u'%sK3音王产成品入库凭证.xls' % (self.name.name),
+            'res_model': 'tax.invoice.producting',
+            'res_id': self.id, })
+
+    @api.multi
+    def createvoucher(self, conn, excel, worksheet, d, number, colnames, line):
+        account_name = line.product_name
+        account = self.search_account_code(conn,account_name)
+        if account:
+            account_code = account[0]
+        product_name = line.product_name2
+        product = self.search_product_code(conn,product_name)
+        if product:
+            product_code = product[0]
+        # 入库且有客户名称能找到：一般单证
+        if line.amount :
+            amount = line.amount
+            note = u"本月生产"
+            xiangmu = u'物料---%s---%s' % (product_code, product_name)
+            d += 1
+            qnt = line.number
+            price = line.price
+            self.createvoucherline(amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                                   xiangmu,qnt,price)
+
+        return d
+
+    @api.multi
+    def createvoucherline(self, amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                          xiangmu,qnt,price):
+        # 修改内容。
+        print self.env['finance.period'].get_period_month_date_range(self.name)[1]
+        excel[u'凭证日期'] = excel[u'业务日期'] = self.env['finance.period'].get_period_month_date_range(self.name)[1]  # 会计期间的最后一天
+        excel[u'会计年度'] = self.name.year
+        excel[u'会计期间'] = self.name.month
+        excel[u'凭证号'] = excel[u'序号'] = 0
+        excel[u'科目代码'] = account_code
+        excel[u'科目名称'] = account_name
+        excel[u'原币金额'] = amount
+        excel[u'借方'] = amount
+        excel[u'贷方'] = 0
+        excel[u'数量单位'] = u'只'
+        excel[u'数量'] = qnt
+        excel[u'单价'] = price
+        excel[u'制单'] = u'宣一敏'
+        excel[u'凭证摘要'] = note
+        excel[u'附件数'] = '1'
+        excel[u'分录序号'] = number
+        excel[u'核算项目'] = xiangmu
+        j = 0
+        for key in colnames:
+            # 写入excel
+            worksheet.write(d, j, excel[key])
+            j += 1
+
+    @api.multi
+    def createvoucherline2(self, amount, excel, number, account_name, account_code, colnames, worksheet, d, note,
+                          xiangmu):
+        excel[u'凭证日期'] = excel[u'业务日期'] = self.env['finance.period'].get_period_month_date_range(self.name)[1]
+        excel[u'会计年度'] = self.name.year
+        excel[u'会计期间'] = self.name.month
+        excel[u'凭证号'] = excel[u'序号'] = 0
+        excel[u'科目代码'] = account_code
+        excel[u'科目名称'] = account_name
+        excel[u'原币金额'] = amount
+        excel[u'借方'] = 0
+        excel[u'贷方'] = amount
+        excel[u'制单'] = u'宣一敏'
+        excel[u'凭证摘要'] = note
+        excel[u'附件数'] = '1'
+        excel[u'分录序号'] = number
+        excel[u'核算项目'] = xiangmu
+        j = 0
+        for key in colnames:
+            worksheet.write(d, j, excel[key])
+            j += 1
+
     @api.multi
     def get_new_code(self, code, i):
         old_code = code.split('.')
@@ -364,6 +491,33 @@ class GoodK3ErpProducting(models.Model):
         cursor.execute(sql%values)
         unit_code = cursor.fetchone()
         return unit_code
+
+    # 查询科目code
+    @api.multi
+    def search_account_code(self, conn, values):
+        cursor = conn.cursor()
+        sql = "select fnumber from t_Account WHERE fname='%s';"
+        cursor.execute(sql % values)
+        account_code = cursor.fetchone()
+        return account_code
+
+    # 查询科目code
+    @api.multi
+    def search_account_name(self, conn, values):
+        cursor = conn.cursor()
+        sql = "select fname from t_Account WHERE fnumber='%s';"
+        cursor.execute(sql % values)
+        account_name = cursor.fetchone()
+        return account_name
+
+    # 查询物料code
+    @api.multi
+    def search_product_code(self, conn, values):
+        cursor = conn.cursor()
+        sql = "select fnumber from t_ICItem WHERE fname='%s';"
+        cursor.execute(sql % values)
+        product_code = cursor.fetchone()
+        return product_code
 
     # 查询物料最大code
     @api.multi
