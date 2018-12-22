@@ -152,9 +152,7 @@ class create_bank_form_wizard(models.TransientModel):
                 amount = amount_out or amount_in
                 date = datetime.datetime.strptime(in_xls_data.get(u'交易时间'), "%Y-%m-%d %H:%M:%S")
                 check = {date: amount}
-                print check,old_order_dateandamount
                 if check in old_order_dateandamount:
-                    print '1'
                     continue
                 self.env['bank.form.line'].create({
                     'name': in_xls_data.get(u'对方单位名称') or '',
