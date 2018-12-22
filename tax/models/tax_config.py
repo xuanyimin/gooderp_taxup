@@ -289,12 +289,9 @@ class create_tax_category_wizard(models.TransientModel):
         """
         导入航天系统的spfwssflbm信息到tax.category
         """
-        print base64.b64decode(self.spfwssflbm)
         data = etree.HTML(base64.b64decode(self.spfwssflbm))
-        print data.text
         for bbox in data.xpath('//bmxx'):
             app ={}
-            print bbox
         pass
 
 class LySaleLine(models.Model):

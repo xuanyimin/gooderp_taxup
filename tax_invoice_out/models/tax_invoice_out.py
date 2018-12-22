@@ -190,11 +190,9 @@ class create_slae_invoice_wizard(models.TransientModel):
             product_tax_rate = float(in_xls_data.get(u'税率')[:-1])
             product_tax = float(in_xls_data.get(u'税额'))
             have_type = goods.split('*')
-            print have_type
             if len(have_type) > 3:
                 goods_name = '*'.join(goods.split('*')[2:])
                 tax_type = goods.split('*')[1]
-                print have_type,goods_name,tax_type
             elif len(have_type) > 1:
                 goods_name = goods.split('*')[-1]
                 tax_type = goods.split('*')[1]
