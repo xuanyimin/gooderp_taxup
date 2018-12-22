@@ -365,7 +365,6 @@ class create_hospital_invoice_wizard(models.TransientModel):
         cursor.execute(sql % internal_id)
         cost_ids = cursor.fetchall()
         for cost_id in cost_ids:
-            print cost_id
             m, amount, unit, number, cost_time = cost_id
             code, name, name2 = self.search_cost_nameall(conn, m)
             cost_type = self.search_cost_type(conn, code)[0]

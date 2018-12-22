@@ -218,7 +218,6 @@ class HospitalMonth(models.Model):
             if not invoice.is_red:
                 i = self.createvoucher(conn, excel[0], worksheet, i, number, colnames, invoice)
                 number += 1
-                print 'i:',i
 
         workbook.save(u'voucher.xls')
         self.closeConnection(conn)
