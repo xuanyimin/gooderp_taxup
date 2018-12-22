@@ -1,0 +1,13 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--发票按钮-->
+        <record id="export_drawback_action" model="ir.actions.act_window">
+            <field name="name">出口退税申报</field>
+            <field name="res_model">export.drawback</field>
+            <field name="view_mode">tree,form</field>
+
+        </record>
+
+	</data>
+</openerp>

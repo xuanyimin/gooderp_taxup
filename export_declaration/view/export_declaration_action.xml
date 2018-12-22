@@ -1,0 +1,32 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!--发票按钮-->
+        <record id="export_declaration_action" model="ir.actions.act_window">
+            <field name="name">报关单</field>
+            <field name="res_model">export.declaration</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="export_declaration_search"/>
+            <field name="context">{'search_default_is_verified':0}</field>
+        </record>
+
+        <record id="export_unit_action" model="ir.actions.act_window">
+            <field name="name">单位</field>
+            <field name="res_model">export.unit</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="export_product_action" model="ir.actions.act_window">
+            <field name="name">商品代码库</field>
+            <field name="res_model">export.product</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="export_port_action" model="ir.actions.act_window">
+            <field name="name">出口口岸</field>
+            <field name="res_model">export.port</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+	</data>
+</openerp>

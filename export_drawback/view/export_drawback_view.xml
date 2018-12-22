@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+        <!--出口退税申报FORM-->
+        <record id="export_drawback_form" model="ir.ui.view">
+            <field name="name">export.drawback.form</field>
+            <field name="model">export.drawback</field>
+            <field name="arch" type="xml">
+                <form string="出口退税申报">
+                    <hard>
+                        <button name='declaration_invoice' string="匹配" type="object" class="oe_highlight"/>
+                        <button name='exp_data' string="导出文件" type="object" class="oe_highlight"/>
+                    </hard>
+                    <sheet>
+                        <div>
+                            <button name="action_get_attachment_view"
+                                    class="oe_stat_button"
+                                    icon="fa-book"
+                                    type="object">
+                                    <field name="attachment_number" widget="statinfo" string="附件"/>
+                            </button>
+                        </div>
+                        <group>
+                            <field name="name"/>
+                            <field name="batch"/>
+                        </group>
+                        <notebook>
+                            <page string="出口退税申报明细">
+                                <field name="line_ids" >
+                                    <form string="出口退税申报明细行" editable="bottom">
+                                        <group>
+                                            <field name="export_declaration"/>
+                                            <field name="export_invoice"/>
+                                            <field name="declaration_type" readonly = "1"/>
+                                            <field name="usd_rate" />
+                                            <field name="original_rate"/>
+                                        </group>
+                                        <group>
+                                            <field name="tax_invoice" widget="many2many_tags"/>
+                                        </group>
+                                        <field name="detailed_ids"/>
+
+                                    </form>
+                                    <tree string="出口退税申报明细行" >
+                                        <field name="export_declaration"/>
+                                        <field name="tax_invoice"/>
+                                        <field name="declaration_type"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--报关单tree-->
+        <record id="export_drawback_tree" model="ir.ui.view">
+            <field name="name">export.drawback.tree</field>
+            <field name="model">export.drawback</field>
+            <field name="arch" type="xml">
+                <tree string="出口退税申报">
+                    <field name="name"/>
+                    <field name="batch"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--报关单tree-->
+        <record id="export_drawback_detailed_tree" model="ir.ui.view">
+            <field name="name">export.drawback.detailed.tree</field>
+            <field name="model">export.drawback.detailed</field>
+            <field name="arch" type="xml">
+                <tree string="出口退税申报">
+                    <field name="ordinal"/>
+                    <field name="export_qnt"/>
+                    <field name="export_unit"/>
+                    <field name="export_fob_amount"/>
+                    <field name="invoice_line" widget="many2many_tags"/>
+                    <field name="declaration_type"/>
+
+                </tree>
+            </field>
+        </record>
+
+        <record id="cn_account_invoice_form_inherit_drawback" model="ir.ui.view">
+            <field name="name">cn_account_invoice_form_inherit_drawback</field>
+            <field name="model">cn.account.invoice</field>
+            <field name='inherit_id' ref='cn_account_invoice.cn_account_invoice_form' />
+            <field name="arch" type="xml">
+                <xpath expr="//page" position="after">
+                    <page string="出口退税" attrs="{'invisible':[('type', '!=', 'in')]}">
+                        <group>
+						    <field name="export_drawback_id" readonly="1"/>
+                        </group>
+                    </page>
+				</xpath>
+            </field>
+        </record>
+
+        <record id="cn_account_invoice_line_tree" model="ir.ui.view">
+            <field name="name">cn_account_invoice_line_tree</field>
+            <field name="model">cn.account.invoice.line</field>
+            <field name="arch" type="xml">
+                <tree string="发票明细行">
+                    <field name="product_name"/>
+                    <field name="product_type"/>
+                    <field name="product_unit"/>
+                    <field name="product_count"/>
+                    <field name="product_price"/>
+                    <field name="product_amount"/>
+                    <field name="product_tax_rate"/>
+                    <field name="product_tax"/>
+                    <field name="tax_type"/>
+                    <field name="is_used"/>
+                </tree>
+            </field>
+        </record>
+
+	</data>
+</odoo>

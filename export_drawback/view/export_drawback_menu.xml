@@ -1,0 +1,9 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- 菜单加入税务模块 -->
+        <menuitem id="menu_export_drawback" name='出口退税申报' action="export_drawback_action"
+            parent="tax.tax_accounting" sequence="30"/>
+
+    </data>
+</openerp>

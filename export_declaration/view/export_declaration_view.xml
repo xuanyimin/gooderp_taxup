@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+        <!--报关单FORM-->
+        <record id="export_declaration_form" model="ir.ui.view">
+            <field name="name">export.declaration.form</field>
+            <field name="model">export.declaration</field>
+            <field name="arch" type="xml">
+                <form string="海关报关单">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="lj_date"/>
+                            <field name="cj_type"/>
+                            <field name="ht_no"/>
+                            <field name="bf"/>
+                            <field name="zf"/>
+                            <field name="currency_id"/>
+                            <field name="export_amount"/>
+                            <field name="my_type"/>
+                        </group>
+                        <notebook>
+                            <page string="报关单明细">
+                                <field name="line_ids" >
+                                    <tree string="报关单明细行" editable="bottom">
+                                        <field name="spxh"/>
+                                        <field name="cmcode"/>
+                                        <field name="cm_name"/>
+                                        <field name="yb_bz"/>
+                                        <field name="yb_amt"/>
+                                        <field name="unit_ids"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--报关单tree-->
+        <record id="export_declaration_tree" model="ir.ui.view">
+            <field name="name">export.declaration.tree</field>
+            <field name="model">export.declaration</field>
+            <field name="arch" type="xml">
+                <tree string="报关单">
+                    <field name="name"/>
+                    <field name="lj_date"/>
+                    <field name="cj_type"/>
+                    <field name="bf"/>
+                    <field name="zf"/>
+                    <field name="ht_no"/>
+                    <field name="is_declare"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="export_declaration_search" model="ir.ui.view">
+            <field name="name">export.declaration.search</field>
+            <field name="model">export.declaration</field>
+            <field name="arch" type="xml">
+                <search string="选单策略">
+                    <field name='name'/>
+                    <field name='ht_no'/>
+                    <filter string="未申报" domain="[('is_declare','=', False)]" name="user_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="export_declaration_action" model="ir.actions.act_window">
+            <field name="name">过滤报关单</field>
+            <field name="res_model">export.declaration</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="export_declaration_search"/>
+            <field name="context">{'search_default_user_id':1}</field>
+        </record>
+
+        <!--报关单位tree-->
+        <record id="export_unit_tree" model="ir.ui.view">
+            <field name="name">export.unit.tree</field>
+            <field name="model">export.unit</field>
+            <field name="arch" type="xml">
+                <tree string="单位" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--商品代码库tree-->
+        <record id="export_product_tree" model="ir.ui.view">
+            <field name="name">export.product.tree</field>
+            <field name="model">export.product</field>
+            <field name="arch" type="xml">
+                <tree string="商品代码库" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="begin_date"/>
+                    <field name="end_date"/>
+                    <field name="unit"/>
+                    <field name="is_real"/>
+                    <field name="tax_category"/>
+                    <field name="taxation_rate"/>
+                    <field name="drawback_rate"/>
+                    <field name="count_rate"/>
+                    <field name="valuation_rate"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--出口口岸tree-->
+        <record id="export_port_tree" model="ir.ui.view">
+            <field name="name">export.port.tree</field>
+            <field name="model">export.port</field>
+            <field name="arch" type="xml">
+                <tree string="出口口岸" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+	</data>
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- 菜单加入税务模块 -->
+        <menuitem id="menu_export_declaration" name='海关报关单' action="export_declaration_action"
+            parent="tax.tax_accounting" sequence="20"/>
+        <menuitem id="menu_import_export_declaration" name='上传已解密报关单' action="export_declaration_import_action"
+            parent="tax.tax_accounting" sequence="19"/>
+
+        <menuitem id="menu_export_unit" name='单位' action="export_unit_action"
+            parent="tax.tax_config_menu" sequence="20"/>
+        <menuitem id="menu_export_product" name='商品代码库' action="export_product_action"
+            parent="tax.tax_config_menu" sequence="30"/>
+        <menuitem id="menu_export_port" name='出口口岸' action="export_port_action"
+            parent="tax.tax_config_menu" sequence="40"/>
+
+    </data>
+</openerp>

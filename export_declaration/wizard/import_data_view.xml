@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="import_export_declaration_wizard_form">
+            <field name="name">import.export.declaration.form</field>
+            <field name="model">import.export.declaration</field>
+            <field name="arch" type="xml">
+                <form string="导入已解密的报关单xml文件">
+                    <field name="type"/>
+                    <field name="ht_xml"/>
+
+                    <footer>
+                        <button string="导入" name="import_data" type="object" class="oe_highlight" attrs="{'invisible': [('type', '=', 'excel')]}"/>
+                        <button string="导入" name="import_data2" type="object" class="oe_highlight"  attrs="{'invisible': [('type', '=', 'xml')]}"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+       <act_window
+            name="已解密的报关单xml文件"
+            id="export_declaration_import_action"
+            multi="True"
+            key2="client_action_multi"
+            res_model="import.export.declaration"
+            src_model="export.declaration"
+            view_mode="form"
+            target="new"
+            view_type="form"/>
+
+    </data>
+
+</odoo>
